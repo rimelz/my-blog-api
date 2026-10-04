@@ -12,6 +12,13 @@ app.get('/', (req, res) => {
     res.json({ message: "Hello, I am the blog API" });
 
 });
+app.get('/about', (req, res) => {
+    res.json({
+        application: 'My Blog API',
+        student: 'Rimel ZOUARI',
+        version: '1.0.0'
+    });
+});
 // In-memory data store. State resets to defaults upon process restart.
 
 // Persistent storage will be handled by MongoDB in Session 3.
@@ -25,6 +32,67 @@ const articles = [
     { id: 3, title: 'Testing an API with Postman', author: 'Rimel' }
 
 ];
+const users = [
+    { id: 1, name: 'Rimel', email: 'Rimel@example.com' },
+    { id: 2, name: 'Ali', email: 'ali@example.com' },
+    { id: 3, name: 'med', email: 'med@example.com' }
+];
+// GET /api/users -> all users
+app.get('/api/users', (req, res) => {
+
+    const { name } = req.query;
+
+    let result = users;
+
+    if (name) {
+        result = users.filter(user => user.name === name);
+    }
+
+    res.json(result);
+
+});
+// GET /api/users?name=Rimel -> users filtered by name
+app.get('/api/users', (req, res) => {
+
+    const { name } = req.query;
+
+    let result = users;
+
+    if (name) {
+        result = users.filter(user => user.name === name);
+    }
+
+    res.json(result);
+
+});
+// GET /api/users/:id -> fetch user by ID
+app.get('/api/users/:id', (req, res) => {
+
+    const id = Number(req.params.id);
+
+    const user = users.find(user => user.id === id);
+
+    if (!user) {
+        return res.status(404).json({ error: `User ${id} not found` });
+    }
+
+    res.json(user);
+
+});
+// POST /contact -> receives a contact message
+app.post('/contact', (req, res) => {
+
+    const { email, message } = req.body;
+
+    if (!email || !message) {
+        return res.status(400).json({ error: 'Email and message are required' });
+    }
+
+    res.status(200).json({
+        message: 'Thank you, your message has been received'
+    });
+
+});
 
 // GET /api/articles -> all articles
 // GET /api/articles?author=Aya -> articles filtered by author
@@ -58,6 +126,16 @@ app.post('/api/articles', (req, res) => {
     articles.push(newArticle);
 
     res.status(201).json({ message: 'Article created', article: newArticle });
+
+});
+// GET /about -> application information
+app.get('/about', (req, res) => {
+
+    res.json({
+        application: 'My Blog API',
+        student: 'Rimel ZOUARI',
+        version: '1.0.0'
+    });
 
 });
 
